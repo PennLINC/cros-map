@@ -273,6 +273,8 @@ if __name__ == "__main__":
                                  ['Unknown','Unknown']))
             datlog = update_log(datlog,i,dl_fl,log_input)
         count+=1
+    datlog.to_csv(dl_fl)
+    errlog.to_csv(el_fl)
 
 # Round 3
     print('==============DERIVING SCAN SESSIONS===============')
@@ -286,6 +288,7 @@ if __name__ == "__main__":
         for i,row in sdf.iterrows():
             datlog.loc[i,'Session'] = sess_map[row['Visit']]
     datlog.to_csv(dl_fl)
+    errlog.to_csv(el_fl)
 
 # Round 4
     abs_path_prefix = '' ##### NEEDS USER INPUT!!!    
@@ -311,6 +314,7 @@ if __name__ == "__main__":
         datlog = update_log(datlog,i,dl_fl,log_input,save=False)
         count+=1
     datlog.to_csv(dl_fl)
+    errlog.to_csv(el_fl)
 
     print('==============MOVING FILES===============')
     count = 0
@@ -323,6 +327,17 @@ if __name__ == "__main__":
         for bdir in [subdir,sesdir,bidsdir]:
             if not os.path.isdir(bdir):
                 os.mkdir(bdir)
-        shutil.copy(i,os.path.join(move_to,row['new_path']))
+        try:
+            dest = os.path.join(move_to,row['new_path'])
+            shutil.copy(i,dest)
+        except:
+            message = 'Could not copy %s to %s'%(i,dest)
+            print(message)
+            log_input = dict(zip(['path','error'],[i,message]))
+            errlog = update_log(errlog,eli,el_fl,log_input)
+            eli+=1
         count+=1
+    datlog.to_csv(dl_fl)
+    errlog.to_csv(el_fl)
+
     print('finished')
