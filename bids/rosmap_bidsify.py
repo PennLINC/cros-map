@@ -7,11 +7,13 @@ from dateutil.parser import parse
 ##### USER INPUTS #####
 
 # location of downloaded data
-datadir = '/cbica/projects/rosmap_fmri/rosmap/raw/'
+datadir = '/cbica/projects/rosmap_fmri/rosmap/sourcedata/data/raw/'
+
+# where you want the data to go
 move_to = '/cbica/projects/rosmap_fmri/rosmap/rawdata/'
 
 # location of desired raw BIDS directory
-abs_path_prefix = '/cbica/projects/rosmap_fmri/rosmap/bids/' 
+#abs_path_prefix = '/cbica/projects/rosmap_fmri/rosmap/bids/' 
 
 # mapping of unique search strings to BIDS categories and "modalities"
 mapping = {'gre_field_mapping_e2_ph': ['fmap', 'phase'],
@@ -315,12 +317,12 @@ if __name__ == "__main__":
     for i,row in datlog.iterrows():
         if count % check_every == 0: 
             print('working on %s of %s'%(count,len(datlog)))
-        subdir = os.path.join(abs_path_prefix,row['subdir'])
+        subdir = os.path.join(move_to,row['subdir'])
         sesdir = os.path.join(subdir,row['sesdir'])
         bidsdir = os.path.join(abs_path_prefix,row['BIDS_dir'])
         for bdir in [subdir,sesdir,bidsdir]:
             if not os.path.isdir(bdir):
                 os.mkdir(bdir)
-        shutil.move(i,os.path.join(move_to,row['new_path']))
+        shutil.copy(i,os.path.join(move_to,row['new_path']))
         count+=1
     print('finished')
