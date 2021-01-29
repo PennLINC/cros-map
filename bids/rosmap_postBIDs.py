@@ -13,7 +13,7 @@ from difflib import get_close_matches
 sys.path.insert(0,'./')
 from rosmap_bidsify import update_log
 
-bids_dir = '/cbica/projects/rosmap_fmri/rosmap/bids/' #cd to this dir
+bids_dir = '/cbica/projects/rosmap_fmri/rosmap/rawdata/' #cd to this dir
 tmpdir = '/cbica/projects/rosmap_fmri/bidstemp/'
 datlog_pth = '/cbica/projects/rosmap_fmri/rosmap/BIDS_data_log.csv'
 errlog_pth =  '/cbica/projects/rosmap_fmri/rosmap/BIDS_error_log.csv'
