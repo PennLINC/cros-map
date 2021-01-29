@@ -18,7 +18,7 @@ move_to = '/cbica/projects/rosmap_fmri/rosmap/rawdata/'
 # mapping of unique search strings to BIDS categories and "modalities"
 mapping = {'gre_field_mapping_e2_ph': ['fmap', 'phase'],
          'gre_field_mapping_e2': ['fmap', 'magnitude2'],
-         'gre_field_mapping_e1': ['fmap', 'magnitude2'],
+         'gre_field_mapping_e1': ['fmap', 'magnitude1'],
          'ep2d_fid_basic_bold': ['func', 'bold'],
          't2_fl3d_tra_No_SWI_ph': ['anat', 'phase'],
          't2_fl3d_tra_No_SWI': ['anat', 'FLAIR'],
@@ -99,10 +99,10 @@ def get_category_and_modality(split,t1,mapping):
     if t1:
         cat,modal = ('anat','T1w')
     else:
-        filename = split[-1]
+        filename = split[-1].split('.')[0]
         found = False
         for key,info in mapping.items():
-            if key in filename:
+            if key == filename:
                 cat,modal = info
                 found = True
                 break
@@ -110,8 +110,8 @@ def get_category_and_modality(split,t1,mapping):
             message = 'filename %s did not match any existing keys for path %s. SKIPPING!'%(
                           filename,npth)
             error = True
-        if cat == 'discard':
-            message = 'filename %s for path %smarked for discard by user'%(filename,npth)
+        if found and cat == 'discard':
+            message = 'filename %s for path %s marked for discard by user'%(filename,npth)
             error = True
 
     if error:
@@ -186,6 +186,7 @@ def get_BIDS_file_path(row, flnm, ext):
                                     row['Modality'],ext)
     return new_fl
 
+
 # script
 if __name__ == "__main__":
 
@@ -226,6 +227,8 @@ if __name__ == "__main__":
             log_input = dict(zip(['path','error'],[pth,message]))
             errlog = update_log(errlog,eli,el_fl,log_input)
             eli+=1
+            log_input = dict(zip(['discard'],['Yes']))
+            datlog = update_log(datlog,pth,dl_fl,log_input)
             continue
         else:
             log_input = dict(zip(['Category','Modality'],[cat,modal]))
@@ -241,6 +244,9 @@ if __name__ == "__main__":
             else:
                 log_input = dict(zip(['Protocol'],[protocol]))
                 datlog = update_log(datlog,pth,dl_fl,log_input)
+        
+    datlog.drop(datlog[datlog.discard=='Yes'].index,inplace=True)
+    datlog.drop('discard',axis=1,inplace=True)
     datlog.to_csv(dl_fl)
     errlog.to_csv(el_fl)
 
