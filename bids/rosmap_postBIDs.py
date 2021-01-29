@@ -18,8 +18,8 @@ tmpdir = '/cbica/projects/rosmap_fmri/bidstemp/'
 datlog_pth = '/cbica/projects/rosmap_fmri/rosmap/BIDS_data_log.csv'
 errlog_pth =  '/cbica/projects/rosmap_fmri/rosmap/BIDS_error_log.csv'
 
-f_unzip = False
-find_missing_sidecars = False
+f_unzip = True
+find_missing_sidecars = True
 add_intendedfors = True
 
 def convert_zipped_fmri(datlog,tmp_dir,errlog,eli,el_fl,check_every=1000):
