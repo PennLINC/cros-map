@@ -18,8 +18,8 @@ tmpdir = '/cbica/projects/rosmap_fmri/bidstemp/'
 datlog_pth = '/cbica/projects/rosmap_fmri/rosmap/BIDS_data_log.csv'
 errlog_pth =  '/cbica/projects/rosmap_fmri/rosmap/BIDS_error_log.csv'
 
-f_unzip = True
-find_missing_sidecars = True
+f_unzip = False
+find_missing_sidecars = False
 add_intendedfors = True
 
 def convert_zipped_fmri(datlog,tmp_dir,errlog,eli,el_fl,check_every=1000):
@@ -110,7 +110,7 @@ def sidecar_survey(datlog,check_every=1000):
 ## EITHER LOAD IT, OR MAKE A NEW ONE!
 def set_fmap_json_IntendedFors(datlog,errlog,eli,el_fl,check_every=1000):
     count = 0
-    ds = datlog[(datlog.Modality=='BOLD') & (datlog.ext=='json')]
+    ds = datlog[(datlog.Modality=='bold') & (datlog.ext=='json')]
     for i,row in ds.iterrows():
         if count % check_every == 0: 
             print('working on %s of %s'%(count,len(ds)))
