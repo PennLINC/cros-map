@@ -8,7 +8,7 @@ sys.path.insert(0,'./')
 from rosmap_bidsify import update_log
 
 #### User inputs
-bids_dir = '/cbica/projects/rosmap_fmri/rosmap/bids/'
+bids_dir = '/cbica/projects/rosmap_fmri/rosmap/rawdata/'
 datlog_pth = '/cbica/projects/rosmap_fmri/rosmap/BIDS_data_log.csv'
 errlog_pth = '/cbica/projects/rosmap_fmri/rosmap/BIDS_error_log.csv'
 check_every = 100
