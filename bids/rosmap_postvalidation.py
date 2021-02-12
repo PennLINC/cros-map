@@ -1,3 +1,4 @@
+import os
 import pandas
 import json
 from dateutil.parser import parse
@@ -23,7 +24,7 @@ def rename_files(datlog,indices,func,check_every=100,rename=True):
     # get old an new paths
     sdf = datlog.loc[indices]
     old_paths = sdf.new_path.values
-    new_paths = epidf.new_path.apply(func).values
+    new_paths = sdf.new_path.apply(func).values
     # replace path in spreadsheet
     datlog.loc[indices,'new_path'] = new_paths
     # rename file on disk
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     print('fixing modality for phasemaps')
     ph_indx = datlog[datlog.Modality=='phase'].index
     ph_func = lambda x: x.replace('_phase.','_phase1.')
-    datlog = rename_files(datlog,o_indx,o_func,check_every)
+    datlog = rename_files(datlog,ph_indx,ph_func,check_every)
     datlog.to_csv(datlog_pth)
 
     # diversify t1 acq
@@ -76,10 +77,11 @@ if __name__ == "__main__":
     print('Adding TaskName and Instructions to bold jsons')
     ds = datlog[(datlog.Modality=='bold') & (datlog.ext=='json')]
     tc_date = parse(tc_date)
+    count = 0
     for i,row in ds.iterrows():
-        if i % check_every == 0: 
+        if count % check_every == 0: 
             print('working on %s of %s'%(i,len(ds)))
-        scandate = parse(str(row['ScanDate']))
+        scandate = parse(str(int(row['ScanDate'])))
         if (tc_date - scandate).days > 0: # if before the date
             inst = 'Eyes closed'
         else:
@@ -90,4 +92,5 @@ if __name__ == "__main__":
         j['Instructions'] = inst
         with open(row['new_path'], 'w') as fp:
             json.dump(j, fp,sort_keys=True, indent=4)
+        count += 1
     print('all done')
