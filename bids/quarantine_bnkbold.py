@@ -43,5 +43,5 @@ if __name__ == "__main__":
             datlog.loc[i,'quarantine'] = 'Yes'
         count += 1
     # finish up
-     datlog.loc[datlog[datlog.quarantine!='Yes'].index,'quarantine'] = 'No'
-     datlog.to_csv(datlog_pth)
+    datlog.loc[datlog[datlog.quarantine!='Yes'].index,'quarantine'] = 'No'
+    datlog.to_csv(datlog_pth)
