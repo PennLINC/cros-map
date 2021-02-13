@@ -162,7 +162,7 @@ def get_file_parts(path,is_t1):
     return hd,tl,ext
 
 def get_BIDS_file_path(row, flnm, ext):
-    if row['Category'] == 'func':
+    if row['Category'] == 'func': # this should be modality=='bold'
         new_fl = 'sub-%s_ses-%s_task-rest_acq-%s_%s.%s'%(
                                             row['projid'],int(row['Session']),
                                             flnm.replace('_',''),
