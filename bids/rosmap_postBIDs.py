@@ -148,7 +148,7 @@ def set_fmap_json_IntendedFors(datlog,errlog,eli,el_fl,check_every=1000):
                 shim_diff = abs(fmri_shim - fmap_shim).mean()
                 # update spreadsheet and json file
                 if all(np.isclose(fmap_shim,fmri_shim,atol=50)):
-                    datlog.loc[fm,'intendedfor'] = i
+                    datlog.loc[fm,'intendedfor'] = i # THIS SHOULD BE row[new_path]! causing errors later!]
                     datlog.loc[fm,'bold_shim_diff'] = shim_diff
                     j['IntendedFor'] = fmap_pth
                     with open(frow['new_path'], 'w') as fp:
