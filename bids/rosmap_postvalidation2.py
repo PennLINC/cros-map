@@ -14,7 +14,7 @@ errlog_pth =  '/cbica/projects/rosmap_fmri/rosmap/BIDS_error_log.csv'
 check_every = 100
 
 # path to validation output
-val_pth = '/cbica/projects/rosmap/rawdata/rmb_validation.csv'
+val_pth = '/cbica/projects/rosmap_fmri/rosmap/rawdata/rmb_validation.csv'
 # path superfolder with quarantined images
 quar_dir = '/cbica/projects/rosmap_fmri/quarantine/'
 
@@ -154,8 +154,8 @@ if __name__ == "__main__":
             j = calculate_TotalReadoutTime(j,wfs,row['ScannerGroup'])
             # write it
             # UNCOMMENT WHEN READY
-            #with open(row['new_path'], 'w') as fp:
-            #    json.dump(j, fp,sort_keys=True, indent=4)
+            with open(row['new_path'], 'w') as fp:
+               json.dump(j, fp,sort_keys=True, indent=4)
         count += 1
 
     print("fixing up other IntendedFors")
@@ -200,10 +200,11 @@ if __name__ == "__main__":
     # get rid of leading slash
     to_q = [x[1:] for x in to_q]
     dest = os.path.join(quar_dir,'missing_image')
-    if not os.path.isdir(dest):
-        os.mkdir(dest)
     for fl in to_q:
-        shutil.move(fl,dest)
+        if not os.path.isdir(dest):
+            os.mkdir(dest)
+        for fl in to_q:
+            shutil.move(fl,dest)
     print('quarantining subject with multidimension phase map')
     to_q = valdf[valdf.type=='MAGNITUDE_FILE_WITH_TOO_MANY_DIMENSIONS'].files.tolist([0][1:])
     dest = os.path.join(quar_dir,'problem_subjects')
