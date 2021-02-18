@@ -124,9 +124,10 @@ if __name__ == "__main__":
         datlog.loc[i,'BIDS_dir'] = bidsdir
         datlog.loc[i,'new_path'] = npath
         # move file (UNCOMMENT WHEN READY TO ROCK)
-        os.rename(oldpth,npth)
+        os.rename(oldpth,npath)
         # add IntendedFor to json
         if row['ext'] == 'json':
+            row = datlog.loc[i]
             error,message = T2_IntendedFor(row)
             if error:
                 print('WARNING: %s'%message)
