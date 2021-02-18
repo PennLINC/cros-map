@@ -27,7 +27,7 @@ def T2_IntendedFor(row, write_data=True):
     match = datlog[(datlog.Modality=='FLAIR') &\
                    (datlog.subdir==row['subdir']) &\
                    (datlog.sesdir==row['sesdir']) &\
-                   (datlog.ext==r'json')]
+                   (datlog.ext=='json')]
     if len(match) != 1:
         error = True
         message = '%s matches found for %s'%(len(match),row['new_path'])
