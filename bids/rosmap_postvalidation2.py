@@ -13,11 +13,6 @@ datlog_pth = '/cbica/projects/rosmap_fmri/rosmap/BIDS_data_log.csv'
 errlog_pth =  '/cbica/projects/rosmap_fmri/rosmap/BIDS_error_log.csv'
 check_every = 100
 
-# path to validation output
-#val_pth = '/cbica/projects/rosmap_fmri/rosmap/rmb_validation.csv'
-# path superfolder with quarantined images
-#quar_dir = '/cbica/projects/rosmap_fmri/quarantine/'
-
 # Water-Fat Shift for EPI images. Taken directly from protocol
 wfs = 18.049
 
@@ -86,23 +81,6 @@ def fix_IntendedFors(json_pth,if_path):
     j['IntendedFor'] = if_path
     with open(json_pth, 'w') as fp:
         json.dump(j, fp,sort_keys=True, indent=4)
-
-#def move_run_directory(source,dest,move_files=True):
-#    if not os.path.isdir(dest):
-#        os.mkdir(dest)
-#    sub,ses,mod,flnm = source.split('/')
-#    dsub = os.path.join(dest,sub)
-#    dses = os.path.join(dsub,ses)
-#    if not os.path.isdir(dsub):
-#        os.mkdir(dsub)
-#    parent_dir = os.path.split(os.path.split(fl)[0])[0][1:]
-#    if move_files:
-#        if not os.path.
-#            shutil.move(parent_dir,dsub)
-#        except:
-#            pass
-    
-#    return dses
 
 ##### script
 
@@ -191,30 +169,4 @@ if __name__ == "__main__":
                     ## UNCOMMENT WHEN READY!    
                     fix_IntendedFors(row['new_path'],if_path)
         count += 1
-
-#    valdf = pandas.read_csv(val_pth)
-#    print('preparing to clean up extraneous subjects')
-#    print('quarantining runs with missing phase jsons')
-#    to_q = valdf[valdf.type=='ECHO_TIME_MUST_DEFINE'].files.tolist()
-#    for fl in to_q:
-#        new_dir = move_run_directory(fl[1:],quar_dir)
-#
-#    print('quarantining jsons with missing images')
-#    to_q = valdf[valdf.type=='SIDECAR_WITHOUT_DATAFILE'].files.tolist()
-#    # get rid of leading slash
-#    to_q = [x[1:] for x in to_q]
-#    dest = os.path.join(quar_dir,'missing_image')
-#    for fl in to_q:
-#        if not os.path.isdir(dest):
-#            os.mkdir(dest)
-#        for fl in to_q:
-#            shutil.move(fl,dest)
-#    print('quarantining subject with multidimension phase map')
-#    to_q = valdf[valdf.type=='MAGNITUDE_FILE_WITH_TOO_MANY_DIMENSIONS'].files.tolist([0][1:])
-#    dest = os.path.join(quar_dir,'problem_subjects')
-#    new_dir = move_run_directory(to_q,dest)
-#    txtfile = os.path.join(new_dir,'quarantine_note.txt' )
-#    with open(txtfile, 'w') as out_file:
-#        note = 'Phase images are cut off and multidimensional'
-#        out_file.write(note)
 
