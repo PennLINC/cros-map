@@ -18,7 +18,7 @@ wfs = 18.049
 
 
 ### Functions
-def T2_IntendedFor(row, write_data=True):
+def T2_IntendedFor(row,datlog,write_data=True):
     match = datlog[(datlog.Modality=='FLAIR') &\
                    (datlog.subdir==row['subdir']) &\
                    (datlog.sesdir==row['sesdir']) &\
@@ -28,10 +28,11 @@ def T2_IntendedFor(row, write_data=True):
         message = '%s matches found for %s'%(len(match),row['new_path'])
     else:
         mrow = match.iloc[0]
+        subpath = 'ses'+mrow['new_path'].split('/ses')[1]
         if write_data:
             with open(row['new_path']) as json_data:
                 j = json.load(json_data)
-            j['IntendedFor'] = mrow['new_path']
+            j['IntendedFor'] = subpath
             with open(row['new_path'], 'w') as fp:
                 json.dump(j, fp,sort_keys=True, indent=4)
         error = False
@@ -64,7 +65,7 @@ def calculate_TotalReadoutTime(in_meta,wfs,scanner):
     trt = wfs / wfs_hz
     in_meta['WaterFatShift'] = wfs
     #in_meta['EffectiveEchoSpacing'] = ees
-    in_meta['TotalReadoutTime'] = wfs
+    in_meta['TotalReadoutTime'] = trt
     
     return in_meta
 
@@ -163,7 +164,7 @@ if __name__ == "__main__":
                     errlog = update_log(errlog,eli,errlog_pth,log_input)
                     eli+=1
                 else:
-                    if_path = match.iloc[0]['new_path']
+                    if_path = 'ses'+match.iloc[0]['new_path'].split('/ses')[1]
                     if '.json' in if_path:
                         if_path = if_path.replace('.json','.nii.gz')
                     ## UNCOMMENT WHEN READY!    
