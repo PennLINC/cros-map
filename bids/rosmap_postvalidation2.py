@@ -16,6 +16,27 @@ check_every = 100
 # Water-Fat Shift for EPI images. Taken directly from protocol
 wfs = 18.049
 
+# base json for bnk
+base_json = {'Modality': 'MR',
+             'MagneticFieldStrength': 1.5,
+             'Manufacturer': 'GE',
+             'ManufacturersModelName': 'SIGNA_EXCITE',
+             'InstitutionName': 'Bannockburn_Radiology_Center',
+             'DeviceSerialNumber': '00000847GURNEEMR',
+             'StationName': 'BRCMR',
+             'PatientPosition': 'HFS',
+             'SoftwareVersions': '11',
+             'TaskName':'rest',
+             'Instructions':'Eyes closed'
+             'EchoTime': 0.0033
+             'RepetitionTime': 2,
+             'FlipAngle': 85,
+             'PulseSequenceType': '2D Spiral GRE Resting State fMRI',
+             'SliceThickness':5,
+            'SliceEncodingDirection':'k',
+            'SequenceName':'sprlio',
+            'SliceTiming':[0.0,0.08,0.16,0.24,0.32,0.4,0.48,0.56,0.64,0.72,0.8,0.88,0.96,1.04,1.12,1.2,1.28,1.36,1.44,1.52,1.6,1.68,1.76,1.84,1.92,2.0]
+            }
 
 ### Functions
 def T2_IntendedFor(row,datlog,write_data=True):
@@ -83,6 +104,10 @@ def fix_IntendedFors(json_pth,if_path):
     with open(json_pth, 'w') as fp:
         json.dump(j, fp,sort_keys=True, indent=4)
 
+def write_bnk_json(pth,base_json):
+    with open(pth, 'w') as fp:
+        json.dump(base_json, fp,sort_keys=True, indent=4)
+
 ##### script
 
 if __name__ == "__main__":
@@ -91,6 +116,35 @@ if __name__ == "__main__":
     datlog = pandas.read_csv(datlog_pth)
     errlog = pandas.read_csv(errlog_pth,index_col=0)
     eli = errlog.index[-1]+1
+
+    print("creating base jsons for bnk fmri images")
+    ds = datlog[(datlog.ScannerGroup=='BNK') & \
+                (datlog.Modality=='bold') & \
+                (datlog.ext!='json')
+                ]
+    count = 0
+    for i,row in ds.iterrows():
+        if count % check_every == 0: 
+            print('working on %s of %s'%(count,len(ds)))
+        fpth = row['new_path']
+        jpth = fpth.split('.')[0]+'.json' 
+        write_bnk_json(jpth,base_json)
+        # make row in log for new file
+        nind = jpth
+        for col in row.index:
+            if col == 'new_path':
+                datlog.loc[nind,col] = jpth
+            elif col == 'ext':
+                datlog.loc[nind,col] = 'json'
+            elif col == 'has_sidecar':
+                datlog.loc[nind,col] = np.nan
+            else:
+                datlog.loc[nind,col] = row[col]
+        datlog.loc[nind,'manually_created'] = 'Yes'
+        # acknowledge that sidecar is now created
+        datlog.loc[i,'has_sidecar'] = 'Yes'
+        count += 1
+    datlog.to_csv(datlog_pth)
 
     print('Moving FLAIR phases to anat and adding IntendedFors')
     ds = datlog[(datlog.Category=='anat') & (datlog.Modality=='phase')]
