@@ -3,6 +3,7 @@ import pandas
 import json
 import sys
 import shutil
+import numpy as np
 import nibabel as nib
 sys.path.insert(0,'./')
 from rosmap_bidsify import update_log
@@ -27,8 +28,8 @@ base_json = {'Modality': 'MR',
              'PatientPosition': 'HFS',
              'SoftwareVersions': '11',
              'TaskName':'rest',
-             'Instructions':'Eyes closed'
-             'EchoTime': 0.0033
+             'Instructions':'Eyes closed',
+             'EchoTime': 0.0033,
              'RepetitionTime': 2,
              'FlipAngle': 85,
              'PulseSequenceType': '2D Spiral GRE Resting State fMRI',
@@ -117,35 +118,6 @@ if __name__ == "__main__":
     errlog = pandas.read_csv(errlog_pth,index_col=0)
     eli = errlog.index[-1]+1
 
-    print("creating base jsons for bnk fmri images")
-    ds = datlog[(datlog.ScannerGroup=='BNK') & \
-                (datlog.Modality=='bold') & \
-                (datlog.ext!='json')
-                ]
-    count = 0
-    for i,row in ds.iterrows():
-        if count % check_every == 0: 
-            print('working on %s of %s'%(count,len(ds)))
-        fpth = row['new_path']
-        jpth = fpth.split('.')[0]+'.json' 
-        write_bnk_json(jpth,base_json)
-        # make row in log for new file
-        nind = jpth
-        for col in row.index:
-            if col == 'new_path':
-                datlog.loc[nind,col] = jpth
-            elif col == 'ext':
-                datlog.loc[nind,col] = 'json'
-            elif col == 'has_sidecar':
-                datlog.loc[nind,col] = np.nan
-            else:
-                datlog.loc[nind,col] = row[col]
-        datlog.loc[nind,'manually_created'] = 'Yes'
-        # acknowledge that sidecar is now created
-        datlog.loc[i,'has_sidecar'] = 'Yes'
-        count += 1
-    datlog.to_csv(datlog_pth)
-
     print('Moving FLAIR phases to anat and adding IntendedFors')
     ds = datlog[(datlog.Category=='anat') & (datlog.Modality=='phase')]
     count = 0
@@ -164,7 +136,7 @@ if __name__ == "__main__":
         # add IntendedFor to json
         if row['ext'] == 'json':
             row = datlog.loc[i]
-            error,message = T2_IntendedFor(row)
+            error,message = T2_IntendedFor(row,datlog)
             if error:
                 print('WARNING: %s'%message)
                 log_input = dict(zip(['path','error'],
@@ -224,4 +196,33 @@ if __name__ == "__main__":
                     ## UNCOMMENT WHEN READY!    
                     fix_IntendedFors(row['new_path'],if_path)
         count += 1
+
+    print("creating base jsons for bnk fmri images")
+    ds = datlog[(datlog.ScannerGroup=='BNK') & \
+                (datlog.Modality=='bold') & \
+                (datlog.ext!='json')
+                ]
+    count = 0
+    for i,row in ds.iterrows():
+        if count % check_every == 0:
+            print('working on %s of %s'%(count,len(ds)))
+        fpth = row['new_path']
+        jpth = fpth.split('.')[0]+'.json'
+        write_bnk_json(jpth,base_json)
+        # make row in log for new file
+        nind = jpth
+        for col in row.index:
+            if col == 'new_path':
+                datlog.loc[nind,col] = jpth
+            elif col == 'ext':
+                datlog.loc[nind,col] = 'json'
+            elif col == 'has_sidecar':
+                datlog.loc[nind,col] = np.nan
+            else:
+                datlog.loc[nind,col] = row[col]
+        datlog.loc[nind,'manually_created'] = 'Yes'
+        # acknowledge that sidecar is now created
+        datlog.loc[i,'has_sidecar'] = 'Yes'
+        count += 1
+    datlog.to_csv(datlog_pth)
 
