@@ -33,28 +33,33 @@ if __name__ == "__main__":
         if not os.path.isdir(dest):
             os.mkdir(dest)
         for fl in to_q:
-            shutil.move(fl,dest)
+            try:
+                os.rename(fl,dest)
+            except:
+                print('couldnt move %s to %s'%(fl,dest))
+                continue
         idx = datlog[datlog['new_path']==to_q[0]].index[0]
         datlog.loc[idx,'quarantine'] = 'Yes'
 
 
     print('moving files with missing jsons')
-    pths = bd[bd.type=='TOTAL_READOUT_TIME_MUST_DEFINE'].files.values
+    pths = valdf[valdf.type=='TOTAL_READOUT_TIME_MUST_DEFINE'].files.values
     dest = os.path.join(quar_dir,'missing_json')
-    for f in fpths:
+    for f in pths:
         shutil.move(f[1:],dest)
         idx = datlog[datlog.new_path==f[1:]].index[0]
         datlog.loc[idx,'quarantine'] = 'Yes'
 
     print('moving more files with missing jsons')
-    pths = bd[bd.type=='ECHO_TIME_MUST_DEFINE'].files.values
+    pths = valdf[valdf.type=='ECHO_TIME_MUST_DEFINE'].files.values
     dest = os.path.join(quar_dir,'missing_json')
-    for f in fpths:
+    for f in pths:
         shutil.move(f[1:],dest)
         idx = datlog[datlog.new_path==f[1:]].index[0]
         datlog.loc[idx,'quarantine'] = 'Yes'
 
     print('fix phase encoding direction')
+    ds = datlog[(datlog.Modality=='epi') & (datlog.ext=='json')]
     for i,row in ds.iterrows():
         jpth = row['new_path']
         if 'AP' in jpth or 'PIA' in jpth:
