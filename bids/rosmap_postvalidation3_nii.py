@@ -119,12 +119,13 @@ if __name__ == "__main__":
             (datlog.Modality=='bold') & \
             (datlog.ext!='json')
             ]
+    count = 0
     for i,row in ds.iterrows():
         if count % check_every == 0:
             print('working on %s of %s'%(count,len(ds)))
         fpth = row['new_path']
         reoriented, error, message = reorient_and_qform2sform(fpth)
-        reoriented = set_xyzt_units(img, xyz='mm', t='sec')
+        reoriented = set_xyzt_units(reoriented, xyz='mm', t='sec')
         if error:
             print('WARNING: %s'%message)
             log_input = dict(zip(['path','error'],
