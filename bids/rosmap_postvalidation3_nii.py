@@ -135,6 +135,7 @@ if __name__ == "__main__":
             count += 1
             continue
         else:
+            os.remove(fpth)
             reoriented.to_filename(fpth)
             count += 1   
     errlog.to_csv(errlog_pth)
