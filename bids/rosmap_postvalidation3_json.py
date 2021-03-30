@@ -46,9 +46,9 @@ if __name__ == "__main__":
                     nif = 'ses'+ fimg.split('/ses')[1]
                 else:
                     nif = ''
+            elif match['Modality'] == epi:
+                nif = ''
         j['IntendedFor'] = nif
-        elif match['Modality'] == epi:
-            nif = ''
         with open(jpth, 'w') as fp:
             json.dump(j, fp,sort_keys=True, indent=4)
     
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     ds = datlog[datlog.ext=='json']
     for i,row in ds.iterrows():
         if count % check_every == 0:
-            print('working on %s of %s'%(count,len(jpths)))
+            print('working on %s of %s'%(count,len(ds)))
         jpth = row['new_path']
         prot = '%s_%s'%(row['ScannerGroup'],row['Protocol'])
         with open(jpth) as json_data:
