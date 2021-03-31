@@ -13,7 +13,7 @@ quar_dir = '/cbica/projects/rosmap_fmri/quarantine/'
 
 check_every = 1000
 
-def move_run_directory(source,dest,move_files=True):
+def move_run_directory(source,dest,move_files=True, unlock=True):
    if not os.path.isdir(dest):
        os.mkdir(dest)
    sub,ses,mod,flnm = source.split('/')
@@ -24,6 +24,9 @@ def move_run_directory(source,dest,move_files=True):
    parent_dir = os.path.split(os.path.split(source)[0])[0]
    q_index = find_indices_for_quarantine(parent_dir)
    if move_files:
+        if unlock:
+            ustr = os.path.join(parent_dir,'*/*')
+            os.system('git annex unlock %s'%ustr)
         try:
             shutil.move(parent_dir,dsub)
         except:
