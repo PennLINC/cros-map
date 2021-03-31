@@ -13,7 +13,7 @@ quar_dir = '/cbica/projects/rosmap_fmri/quarantine/'
 
 check_every = 1000
 
-def move_run_directory(source,dest,move_files=True, unlock=True):
+def move_run_directory(source,dest,datlog,move_files=True, unlock=True):
    if not os.path.isdir(dest):
        os.mkdir(dest)
    sub,ses,mod,flnm = source.split('/')
@@ -22,7 +22,7 @@ def move_run_directory(source,dest,move_files=True, unlock=True):
    if not os.path.isdir(dsub):
        os.mkdir(dsub)
    parent_dir = os.path.split(os.path.split(source)[0])[0]
-   q_index = find_indices_for_quarantine(parent_dir)
+   q_index = find_indices_for_quarantine(parent_dir,datlog)
    if move_files:
         if unlock:
             ustr = os.path.join(parent_dir,'*/*')
@@ -34,7 +34,7 @@ def move_run_directory(source,dest,move_files=True, unlock=True):
     
    return dses, q_index
 
-def find_indices_for_quarantine(parent_dir):
+def find_indices_for_quarantine(parent_dir,datlog):
     sub,ses = parent_dir.split('/')
     q_index = datlog[(datlog.subdir==sub) & (datlog.sesdir==ses)].index
     return q_index
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     print('quarantining runs with missing phase jsons')
     to_q = valdf[valdf.type=='ECHO_TIME_MUST_DEFINE'].files.tolist()
     for fl in to_q:
-        new_dir,q_index = move_run_directory(fl[1:],quar_dir)
+        new_dir,q_index = move_run_directory(fl[1:],quar_dir,datlog)
         datlog.loc[q_index,'quarantine'] = 'Yes'
 
 
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     print('quarantining subject with multidimension phase map')
     to_q = valdf[valdf.type=='MAGNITUDE_FILE_WITH_TOO_MANY_DIMENSIONS'].files.tolist()[0][1:]
     dest = os.path.join(quar_dir,'problem_subjects')
-    new_dir, q_index = move_run_directory(to_q,dest)
+    new_dir, q_index = move_run_directory(to_q,dest,datlog)
     datlog.loc[q_index,'quarantine'] = 'Yes'
     txtfile = os.path.join(new_dir,'quarantine_note.txt' )
     with open(txtfile, 'w') as out_file:

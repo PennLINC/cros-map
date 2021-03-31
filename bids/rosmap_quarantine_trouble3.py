@@ -24,17 +24,20 @@ if __name__ == "__main__":
     target_dir = os.path.join(quar_dir,'missing_json')
     for fl in fls:
         os.system('git annex unlock %s'%fl)
-        shutil.move(fl,target_dir)
+        try:
+            shutil.move(fl,target_dir)
+        except: # if it fails its because it was already quarantined
+            os.remove(fl) # so get rid of it
 
     print('getting rid of jsons for which we have no images')
-    fls = [x[1:] for x in bd[bd.type=='SIDECAR_WITHOUT_DATAFILE'].files.unique()]
+    fls = [x[1:] for x in valdf[valdf.type=='SIDECAR_WITHOUT_DATAFILE'].files.unique()]
     for fl in fls:
         os.remove(fl) # these files have already been quarantined
 
     print('quarantining subject with multidimension phase map')
     to_q = valdf[valdf.type=='MAGNITUDE_FILE_WITH_TOO_MANY_DIMENSIONS'].files.tolist()[0][1:]
     dest = os.path.join(quar_dir,'problem_subjects')
-    new_dir, q_index = move_run_directory(to_q,dest,unlock-True)
+    new_dir, q_index = move_run_directory(to_q,dest,datlog,unlock=True)
     datlog.loc[q_index,'quarantine'] = 'Yes'
     txtfile = os.path.join(new_dir,'quarantine_note.txt' )
     with open(txtfile, 'w') as out_file:
