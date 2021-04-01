@@ -1,5 +1,6 @@
 import os
 import json 
+import pandas
 bids_dir = '/cbica/projects/rosmap_fmri/rosmap/rawdata/'
 
 check_every = 100
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     for i,fl in enumerate(fls):
         if i % check_every == 0:
             print('working on %s of %s'%(i,len(fls)))
-        jpth = fl.replace('.nii.gz','json')
+        jpth = fl.replace('.nii.gz','.json')
         with open(jpth) as json_data:
             j = json.load(json_data)
         intfor = j['IntendedFor']
