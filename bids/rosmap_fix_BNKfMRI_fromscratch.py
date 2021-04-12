@@ -1,15 +1,14 @@
 import os
+from glob import glob
 import pandas
-import json
 import sys
-import shutil
+import zipfile
 import numpy as np
 import nibabel as nib
 sys.path.insert(0,'./')
 from rosmap_postvalidation3_nii import reorient_and_qform2sform, set_xyzt_units
 
 datadir = '/cbica/projects/rosmap_fmri/rosmap/sourcedata/bnk_fmri/'
-bids_dir = '/cbica/projects/rosmap_fmri/rosmap/rawdata/'
 datlog_pth = '/cbica/projects/rosmap_fmri/rosmap/BIDS_data_log.csv'
 tmpdir = '/cbica/projects/rosmap_fmri/tmp/'
 check_every = 20
@@ -26,11 +25,15 @@ def locate_datlog_index(fpath,datlog):
 def convert_zipped_fmri(fpath, tmp_dir, outfile):
         
     # extract and concatenate
-    with zipfile.ZipFile(fpath, 'r') as zip_ref:
-        zip_ref.extractall(tmp_dir)
+    try:
+        with zipfile.ZipFile(fpath, 'r') as zip_ref:
+            zip_ref.extractall(tmp_dir)
+    except:
+        return 'error'
     fls = sorted(glob(os.path.join(tmp_dir,'*.img')))
     img = nib.concat_images(fls,check_affines=False,axis=3)
-    
+    img = nib.Nifti1Image(img.get_fdata(),img.affine,img.header)    
+
     # save image
     img.to_filename(outfile)
 
@@ -51,7 +54,7 @@ if __name__ == "__main__":
     
     os.chdir(datadir)
     datlog = pandas.read_csv(datlog_pth,index_col=0)
-    fmris = sorted(glob(os.path.join(datadir,'*')))
+    fmris = sorted(glob(os.path.join(datadir,'*.zip')))
     print('unzipping, renaming and prepping nii')
 
     for i, fmri in enumerate(fmris):
@@ -64,6 +67,9 @@ if __name__ == "__main__":
         # convert from .zip to nii
         nii = os.path.join(datadir,fnm)
         nii = convert_zipped_fmri(fmri,tmpdir,nii)
+        if nii == 'error':
+            print('FAILURE!',fmri)
+            continue
         # fix nii
         reoriented, error, message = reorient_and_qform2sform(nii)
         if error:
