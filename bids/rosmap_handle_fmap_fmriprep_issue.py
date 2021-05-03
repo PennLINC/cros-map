@@ -5,6 +5,7 @@ from glob import glob
 
 bids_dir = '/cbica/projects/rosmap_fmri/rosmap/rawdata/'
 datlog_pth = '/cbica/projects/rosmap_fmri/rosmap/BIDS_data_log.csv'
+check_every = 1000
 
 if __name__ == "__main__":
     os.chdir(bids_dir)
@@ -19,7 +20,7 @@ if __name__ == "__main__":
         count += 1
         if row['Category'] == 'fmap' and row['ext'] == 'json':
             if os.path.isfile(row['new_path']):
-                df[df.new_path==row.new_path.replace('json','nii.gz')].iloc[0]
+                match = df[df.new_path==row.new_path.replace('json','nii.gz')].iloc[0]
                 # add in missing intended for if missing and necessary
                 with open(row['new_path']) as json_data:
                     j = json.load(json_data)
