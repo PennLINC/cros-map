@@ -37,9 +37,13 @@ if __name__ == "__main__":
                 # change fmap name to get rid of acq differences
 
                 acq = row.new_path.split('acq-')[1].split('_')[0]
-                nj_path = row.new_path.replace(acq,j['RosmapProtocol'])
+                nj_path = row.new_path.replace(acq,
+                                               j['RosmapProtocol'
+                                                ].replace('_',''))
                 df.loc[i,'new_path'] = nj_path
-                ni_path = match.new_path.replace(acq,j['RosmapProtocol'])
+                ni_path = match.new_path.replace(acq,
+                                               j['RosmapProtocol'
+                                                ].replace('_',''))
                 df.loc[match.name,'new_path'] = ni_path
                 renames.update({row.new_path: nj_path})
                 renames.update({match.new_path: ni_path})
