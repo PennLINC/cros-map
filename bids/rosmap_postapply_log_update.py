@@ -6,7 +6,7 @@ it_nm = 'rmb7_iter2'
 
 ##### Code
 
-datlog = pandas.read_csv(datlog_pth,index_col=0)
+datlog = pandas.read_csv(datlog_pth)
 df = pandas.read_csv(applycmd_pth) 
 
 for i,row in df.iterrows():
@@ -16,4 +16,6 @@ for i,row in df.iterrows():
     match = datlog[datlog.new_path==oldpth]
     datlog.loc[match.index,'newpath_%s'%it_nm] = newpth
 
+remainder = datlog[~pandas.notnull(datlog['newpath_%s'%it_nm])].index
+datlog.loc[remainder,'newpath_%s'%it_nm] = datlog.loc[remainder,'new_path'].values
 datlog.to_csv(datlog_pth,index=False)
