@@ -24,6 +24,7 @@ for bdir in datlog.BIDS_dir.unique():
         ch_inds += sdf[sdf.Modality=='phase'].index.tolist()
 
 print('adding second echotimes')
+ds = datlog.loc[ch_inds]
 nm_changes = {}
 count = 0
 for i,row in ds.iterrows():
@@ -34,7 +35,7 @@ for i,row in ds.iterrows():
     # store name change to run at the end
     nm_changes.update({old_pth: new_pth})
     # save new path to spreadsheet
-    datlog.loc[i,pathcol] = new_path
+    datlog.loc[i,pathcol] = new_pth
     # add double echotimes
     if row['ext'] == 'json':
         with open(old_pth) as json_data:
@@ -54,3 +55,6 @@ print('renaming images')
 # rename images (doing this last because it's hardest to undo)
 for oldpth,newpth in nm_changes.items():
     os.rename(oldpth,newpth)
+
+print('finishing up')
+datlog.to_csv(datlog_pth)
