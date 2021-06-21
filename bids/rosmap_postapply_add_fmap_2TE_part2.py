@@ -7,30 +7,32 @@ datlog_pth = '/cbica/projects/rosmap_fmri/rosmap/BIDS_data_log.csv'
 pathcol = 'newpath_rmb7_iter2'
 valpth = '/cbica/projects/rosmap_fmri/rosmap/rmb8_validation.csv'
 
+echotimes = [0.00492,0.00738]
+
 ### code
 os.chdir(datadir)
 datlog = pandas.read_csv(datlog_pth,index_col=0)
 valdf = pandas.read_csv(valpth)
 
-scans = [x[1:] for x in valdf[valdf.type=='MISSING_MAGNITUDE1_FILE'].files]
-print('fixing phasemap to phase1')
-for scan in scans:
-    match = datlog[datlog[pathcol]==scan].index[0]
-    jpth = scan.replace('.nii.gz','.json')
-    jmatch = datlog[datlog[pathcol]==jpth].index[0]
-    newpth = scan.replace('phasediff','phase1')
-    newjpth = jpth.replace('phasediff','phase1')
-    with open(jpth) as json_data:
-       j = json.load(json_data)
-    j['EchoTime'] = j['EchoTime2']
-    j.pop('EchoTime1')
-    j.pop('EchoTime2')
-    with open(jpth, 'w') as fp:
-        json.dump(j, fp,sort_keys=True, indent=4)
-    os.rename(scan,newpth)
-    os.rename(jpth,newjpth)
-    datlog.loc[match,pathcol] = newpth
-    datlog.loc[jmatch,pathcol] = newjpth
+#scans = [x[1:] for x in valdf[valdf.type=='MISSING_MAGNITUDE1_FILE'].files]
+#print('fixing phasemap to phase1')
+#for scan in scans:
+#    match = datlog[datlog[pathcol]==scan].index[0]
+#    jpth = scan.replace('.nii.gz','.json')
+#    jmatch = datlog[datlog[pathcol]==jpth].index[0]
+#    newpth = scan.replace('phasediff','phase1')
+#    newjpth = jpth.replace('phasediff','phase1')
+#    with open(jpth) as json_data:
+#       j = json.load(json_data)
+#    j['EchoTime'] = j['EchoTime2']
+#    j.pop('EchoTime1')
+#    j.pop('EchoTime2')
+#    with open(jpth, 'w') as fp:
+#        json.dump(j, fp,sort_keys=True, indent=4)
+#    os.rename(scan,newpth)
+#    os.rename(jpth,newjpth)
+#    datlog.loc[match,pathcol] = newpth
+#    datlog.loc[jmatch,pathcol] = newjpth
 
 print('converting phase1 to phasemap')
 ds = datlog[(datlog.Category=='fmap') & (datlog.Protocol=='20150715')]
