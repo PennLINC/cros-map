@@ -15,6 +15,6 @@ for i,row in ds.iterrows():
     with open(jpth) as json_data:
         j = json.load(json_data)
     if 'IntendedFor' in j.keys():
-        j['IntendedFor'] = ''
+        j['IntendedFor'] = []
     with open(jpth, 'w') as fp:
        json.dump(j, fp,sort_keys=True, indent=4)
