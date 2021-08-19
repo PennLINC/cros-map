@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     print('renaming files')
     for src,dest in to_rename.items():
-        jnk = dest.split()
+        jnk = dest.split('/')
         target_dir = '%s/%s/%s'%(jnk[0],jnk[1],jnk[2])
         if not os.path.isdir(target_dir):
             os.mkdir(target_dir)
