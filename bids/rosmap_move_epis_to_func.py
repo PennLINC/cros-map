@@ -62,12 +62,16 @@ if __name__ == "__main__":
             with open(jpth) as json_data:
                 j = json.load(json_data)
             j['IntendedFor'] = ifor
-            # with open(jpth, 'w') as fp:
-            #     json.dump(j, fp,sort_keys=True, indent=4)
+            with open(jpth, 'w') as fp:
+                json.dump(j, fp,sort_keys=True, indent=4)
         count+=1
 
     print('renaming files')
     for src,dest in to_rename.items():
+        jnk = dest.split()
+        target_dir = '%s/%s/%s'%(jnk[0],jnk[1],jnk[2])
+        if not os.path.isdir(target_dir):
+            os.mkdir(target_dir)
         os.rename(src,dest)
 
     print('saving')
