@@ -42,7 +42,8 @@ if __name__ == "__main__":
         to_rename.update({row[pthcol]: newpth})
         datlog.loc[i,pthcol] = newpth
         njpth = datlog.loc[jind,pthcol].replace('/fmap/','/func/'
-                            ).replace('_dir-AP_epi','_bold')
+                            ).replace('_dir-AP_epi','_bold'
+                            ).replace('_acq','_task-rest_acq')
         to_rename.update({datlog.loc[jind,pthcol]: njpth})
         datlog.loc[jind,pthcol] = njpth
         # add intendedfors
