@@ -38,7 +38,8 @@ if __name__ == "__main__":
             datlog.loc[ind,'Modality'] = 'bold'
             datlog.loc[ind,'BIDS_dir'] = row['BIDS_dir'].replace('fmap','func')
         newpth = row[pthcol].replace('/fmap/','/func/'
-                            ).replace('_dir-AP_epi','_bold')
+                            ).replace('_dir-AP_epi','_bold'
+                            ).replace('_acq','_task-rest_acq')
         to_rename.update({row[pthcol]: newpth})
         datlog.loc[i,pthcol] = newpth
         njpth = datlog.loc[jind,pthcol].replace('/fmap/','/func/'
