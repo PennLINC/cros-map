@@ -9,6 +9,7 @@ audit_pth = '/cbica/projects/rosmap_fmri/rosmap/code/iterations/rmb10_iter2_audi
 acq_pth = '/cbica/projects/rosmap_fmri/rosmap/code/iterations/rmb10_iter2_AcqGrouping.csv'
 check_every = 1000
 pthcol = 'newpath_rmb7_iter2'
+echotimes = [0.00492,0.00738]
 
 if __name__ == "__main__":
     os.chdir(bids_dir)
@@ -18,7 +19,7 @@ if __name__ == "__main__":
     ags = aud[aud.JakeAnnot=='TraitError']['AcqGroup'].unique()
     ds = acq[acq.AcqGroup.isin(ags)]
     
-    print('creating new paths and updating spreadsheet')
+    print('creating new paths, adding TE2 and updating spreadsheet')
     to_rename = {}
     for i,row in ds.iterrows():
         fmaps = sorted(glob(os.path.join(bids_dir,'%s/ses-%s/fmap/*'%(row['subject'],row['session']))))
@@ -26,6 +27,19 @@ if __name__ == "__main__":
         targets = [x for x in fmaps if 'phase1' in x and 't2' not in x]
         jpth = [x for x in targets if 'json' in x][0]
         npth = [x for x in targets if 'nii' in x][0]
+        # add TEs
+        with open(jpth) as json_data:
+            j = json.load(json_data)
+        if j['EchoTime'] not in echotimes:
+            print('echo time of %s found for index %s'%(j['EchoTime'],i))
+            j['EchoTime2'] = j['EchoTime']
+        else:
+            j['EchoTime2'] = echotimes[1]
+        j['EchoTime1'] = echotimes[0]
+        j.pop('EchoTime')
+        with open(jpth, 'w') as fp:
+            json.dump(j, fp,sort_keys=True, indent=4)
+        # renaming and updating spreadsheet
         fdf = df[(df.subdir==row['subject']) & \
                  (df.sesdir=='ses-%s'%int(row['session'])) &\
                  (df.Modality=='phase') & (df.Category=='fmap')
