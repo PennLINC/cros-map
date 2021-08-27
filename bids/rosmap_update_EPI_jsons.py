@@ -20,6 +20,7 @@ if __name__ == "__main__":
     datlog = pandas.read_csv(datlog_pth,index_col=0)
     bv = pandas.read_csv(bv_path)
     print('adding slice timing, ees and task name to EPI jsons')
+    pths = bv[bv.type=='SLICE_TIMING_NOT_DEFINED'].files.values
     for pth in pths:
         npth = os.path.join(bids_dir,pth[1:])
         jnk = datlog[datlog[pthcol]==pth[1:]]
@@ -32,7 +33,7 @@ if __name__ == "__main__":
         tr = j['RepetitionTime']
         times = np.linspace(0,tr,n_slices)
         slice_timing = times[slice_order]
-        j['SliceTiming'] = slice_timing
+        j['SliceTiming'] = list(slice_timing)
         j['TaskName'] = 'rest'
         j['SliceEncodingDirection'] = 'k'
         wfs = j['WaterFatShift']
@@ -43,4 +44,5 @@ if __name__ == "__main__":
         j['EffectiveEchoSpacing'] = ees
         with open(jpth, 'w') as fp:
             json.dump(j, fp,sort_keys=True, indent=4)
+
 
