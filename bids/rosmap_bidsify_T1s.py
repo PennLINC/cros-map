@@ -139,7 +139,7 @@ if __name__ == "__main__":
             os.remove(pth)
 
     ### rename everything
-    for src,dest in to_rename:
+    for src,dest in to_rename.items():
         shutil.copyfile(src,dst)
 
 
