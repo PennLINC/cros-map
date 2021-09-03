@@ -132,17 +132,28 @@ if __name__ == "__main__":
         to_rename.update({paths[i]: abs_path})
 
     ## remove old filenames that will be replaced
-    print('removing, renaming and saving')
-
+    print('removing files to be replaced')
     for pth in to_remove:
         if os.path.exists(pth):
             os.remove(pth)
 
     ### rename everything
+    print('moving and renaming T1 files')
     for src,dest in to_rename.items():
+        hd,tl = dest.split('rawdata/')
+        hd += 'rawdata/'
+        sub,ses,cat,fnm = tl.split('/')
+        subdir = os.path.join(hd,sub)
+        sesdir = os.path.join(subdir,ses)
+        catdir = os.path.join(sesdir,cat)
+        if not os.path.isdir(subdir):
+            os.mkdir(subdir)
+        if not os.path.isdir(sesdir):
+            os.mkdir(sesdir)
+        if not os.path.isdir(catdir):
+            os.mkdir(catdir)
         shutil.copyfile(src,dest)
-
-
-
+    
     ### save
+    print('saving')
     datlog.to_csv(datlog_pth)
