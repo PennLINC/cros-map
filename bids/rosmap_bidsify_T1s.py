@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     ### rename everything
     for src,dest in to_rename.items():
-        shutil.copyfile(src,dst)
+        shutil.copyfile(src,dest)
 
 
 
