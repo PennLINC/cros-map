@@ -21,9 +21,7 @@ if __name__ == "__main__":
         nbp = row['BIDS_dir'].replace(osess,nsess)
         opath = os.path.join(datadir,row[pthcol])
         npath = opath.replace('/%s/'%osess,'/%s/'%nsess)
-        if not os.path.isdir(os.path.join(datadir,nbp)):
-            print('%s doesnt exist'%nbp)
-        to_rename.update({row[pthcol]: npath})
+        to_rename.update({opath: npath})
         datlog.loc[match.index[0],'BIDS_dir'] = nbp
         datlog.loc[match.index[0],pthcol] = row[pthcol].replace('/%s/'%osess,'/%s/'%nsess)
 
