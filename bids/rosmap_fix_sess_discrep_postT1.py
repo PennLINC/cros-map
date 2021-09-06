@@ -41,3 +41,5 @@ if __name__ == "__main__":
         if not os.path.isdir(catdir):
             os.mkdir(catdir)
         shutil.copyfile(src,dest)
+
+    datlog.to_csv(datlog_pth)
