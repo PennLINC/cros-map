@@ -38,6 +38,6 @@ if __name__ == "__main__":
             os.mkdir(sesdir)
         if not os.path.isdir(catdir):
             os.mkdir(catdir)
-        shutil.copyfile(src,dest)
+        os.rename(src,dest)
 
     datlog.to_csv(datlog_pth)
