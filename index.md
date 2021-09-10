@@ -1,6 +1,9 @@
 
-# Table of Contents
+#
+
+1. TOC
 {:toc}
+
 
 # Basic Project Info
 
