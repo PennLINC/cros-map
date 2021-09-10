@@ -1,6 +1,6 @@
 
 # Table of Contents
-1. TOC {:toc}
+{:toc}
 
 # Basic Project Info
 
@@ -51,7 +51,7 @@ Path to BIDS dataset on CUBIC: `/cbica/projects/rosmap_fmri/rosmap/`
 `#rosmap`
 
 ### Trello board
-[link to Trello board]https://trello.com/c/u0LrG38M/34-process-ros-map-rsfmri-data
+[link to Trello board](https://trello.com/c/u0LrG38M/34-process-ros-map-rsfmri-data)
 
 ### Google Drive Folder
 None, currently. Maybe one day.
