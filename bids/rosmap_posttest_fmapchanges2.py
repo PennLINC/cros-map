@@ -19,7 +19,7 @@ if __name__ == "__main__":
     ags = aud[aud.AuditStatus==err]['AcqGroup'].unique()
     ds = acq[acq.AcqGroup.isin(ags)]
     for i,row in ds.iterrows():
-        jpth = glob(os.path.join(bids_dir,'%s/ses-%s/fmap/*.phasediff.json'%(row.subject,row.session)))[0]
+        jpth = glob(os.path.join(bids_dir,'%s/ses-%s/fmap/*phasediff.json'%(row.subject,row.session)))[0]
         # add TEs
         with open(jpth) as json_data:
             j = json.load(json_data)
