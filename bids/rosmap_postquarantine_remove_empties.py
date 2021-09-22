@@ -12,4 +12,4 @@ if __name__ == "__main__":
     for sub in subs:
         subpth = os.path.join(bids_dir,sub)
         if os.path.isdir(subpth):
-            os.remove(subpth)
+            os.rmdir(subpth)
