@@ -15,7 +15,7 @@ divisions = 18
 #### SCRIPT
 
 # initialize masker (resample to image space)
-input_data.NiftiLabelsMasker(atlas,resampling_target='data')
+input_data.NiftiLabelsMasker(atlas_pth,resampling_target='data')
 
 
 # find images
