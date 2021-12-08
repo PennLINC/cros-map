@@ -12,4 +12,4 @@ divisions = 18
 
 first_subset=1
 last_subset = divisions+2
-submit_array_job('extract_fmri_data.py',first_subset,last_subset,RAM=16)
+submit_array_job('/cbica/projects/rosmap_fmri/git/cros-map/derivatives/extract_fmri_data.py',first_subset,last_subset,RAM=16)
