@@ -17,10 +17,10 @@ from xgboost import XGBRFRegressor, XGBRFClassifier
 from pennlinckit.utils import get_sge_task_id
 
 
-GMVS = pandas.read_csv('/Users/jacobv/Science/ROSMAP/ResilSig/GM_ML/GMVS.csv',index_col=0)
-regr = pandas.read_csv('/Users/jacobv/Science/ROSMAP/ResilSig/GM_ML/regr.csv',index_col=0)
-featdict = pandas.read_pickle('/Users/jacobv/Science/ROSMAP/ResilSig/GM_ML/featnames.pk')
-outdir = ''
+GMVS = pandas.read_csv('/cbica/projects/NACC_APM_structural/BF2_ML/data/GMVS.csv',index_col=0)
+regr = pandas.read_csv('/cbica/projects/NACC_APM_structural/BF2_ML/data/regr.csv',index_col=0)
+featdict = pandas.read_pickle('/cbica/projects/NACC_APM_structural/BF2_ML/data/featnames.pk')
+outdir = '/cbica/projects/NACC_APM_structural/BF2_ML/output/'
 
 
 modkind = 'reg'
@@ -30,7 +30,7 @@ SVR_PG = {'C': [0.1, 1, 10, 100, 1000], 'gamma':[0.1, 1, 10,]}
 RFR_PG = {'max_depth': [3, 5, 7, 10, 15, 20, 40, 50, None]}
 EN_PG = {'l1_ratio': [.1, .5, .7, .9, .95, .99, 1]}
 
-if modkind = 'reg':
+if modkind == 'reg':
     
     # models
     models = {'reg-Lasso': LassoCV(random_state=123, n_jobs=2,max_iter=1000),
@@ -53,7 +53,7 @@ elif modkind == 'clf':
 
     # models
     models = {'clf-LR': LogisticRegressionCV(random_state=123, penalty='elasticnet', n_jobs=2,max_iter=1000,
-                                             scoring='average_precision'),
+                                             scoring='average_precision',solver='liblinear'),
              'clf-SVC': GridSearchCV(SVC(kernel='linear',random_state=123),SVR_PG,n_jobs=3, scoring='average_precision'),
              'clf-RFC': GridSearchCV(RandomForestClassifier(random_state=123,
                                                       oob_score=True),
@@ -105,7 +105,7 @@ def inputs_builder(namestring,unregdf,regrdf,feat_input,model_input,modkind):
     elif jnk[4] == 'SelFDR':
         dr = SelectFdr(selector)
     elif jnk[4] == 'PCA':
-        pca = PCA(n_components=20,random_state=123)
+        dr = PCA(n_components=20,random_state=123)
     
     if jnk[4] == 'None':
         model =  Pipeline([('scale',StandardScaler()),
@@ -143,8 +143,9 @@ def unique_id_kfold(fid_df, full_df, ref_df, cv_object, groups,
     return train_test_tuple_list
 
 def ML_Pipeline(outdir,df,xcols,ycols,model,kfold,modkind,namestring,
-                n_iter=100,scancol='asegscan',scanval=1,cv_nsplits=5):
+                n_iter=100,scancol='asegscan',scanval=1,idcol='asegname',cv_nsplits=5):
     
+    print(namestring)
     results = pandas.DataFrame()
     if kfold == 'classic':
         df = df[df[scancol]==scanval]
@@ -154,6 +155,7 @@ def ML_Pipeline(outdir,df,xcols,ycols,model,kfold,modkind,namestring,
     y = df.loc[goodind,ycols]
     ind = 0
     for i in range(n_iter):
+        print('iteration',i)
         in_sids = X.index
         preds = []
         trues = []
@@ -173,7 +175,7 @@ def ML_Pipeline(outdir,df,xcols,ycols,model,kfold,modkind,namestring,
             uidf = pandas.DataFrame(df[df[scancol]==scanval],copy=True)
             oidf = pandas.DataFrame(df[df[scancol]!=scanval],copy=True)
             kf = unique_id_kfold(uidf, oidf,pandas.DataFrame(df,copy=True),
-                                    kf, None, split_col=scancol)
+                                    kf, None, split_col=idcol)
             for tr_ind,te_ind in kf:
                 Xtr = X.loc[in_sids[tr_ind]]
                 Xte = X.loc[in_sids[te_ind]]
@@ -209,9 +211,9 @@ def ML_Pipeline(outdir,df,xcols,ycols,model,kfold,modkind,namestring,
         ind += 1
 
 ##### script
-i = get_sge_task_id()
+i = get_sge_task_id() - 1
 strings = build_namestring(options)
-df,xcols,ycols,model,kfold,modkind,namestring = inputs_builder(c_strings[i],
+df,xcols,ycols,model,kfold,modkind,namestring = inputs_builder(strings[i],
                                                                GMVS,regr,featdict,models,modkind)
 ML_Pipeline(outdir,df,xcols,ycols,model,kfold,modkind,namestring,
-                n_iter=100,scancol='asegscan',scanval=1,cv_nsplits=5)
+                n_iter=100,scancol='asegscan',scanval=1,idcol='asegname',cv_nsplits=5)
